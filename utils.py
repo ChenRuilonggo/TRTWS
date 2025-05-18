@@ -10,6 +10,7 @@ import json
 import pandas as pd
 from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score
+from sklearn.preprocessing import StandardScaler
 
 def run_tensor_regression_cv(region_id,     # region_id
                               tensor_path="expression_tensor.npz",
@@ -42,9 +43,15 @@ def run_tensor_regression_cv(region_id,     # region_id
 
     # === Construct design matrix ===
     X = vcf_df.set_index("FID").iloc[:, 5:]
-    X.insert(0, "intercept", 1)
-    X.index.name = "Sample_ID"
-    design_matrix = X
+
+    # === Standardize SNP covariates ===
+    scaler = StandardScaler()
+    X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns, index=X.index)
+
+    # === Add intercept term ===
+    X_scaled.insert(0, "intercept", 1)
+    X_scaled.index.name = "Sample_ID"
+    design_matrix = X_scaled
 
     n_samples, n_covariates = design_matrix.shape
     if n_samples <= n_covariates:
@@ -65,14 +72,14 @@ def run_tensor_regression_cv(region_id,     # region_id
 
         # Run tensor regression on training set
         core_shape = (design_train.shape[1], rank1, rank2)
-        model = TensorReg_3d(
+        results = TensorReg_3d(
             tensor=subtensor_train,
             X_covar1=design_train,
             core_shape=core_shape
         )
 
         # Extract intermediate C_ts and test covariates
-        C_ts = model["C_ts"]  # shape: (n_train, cell_types, genes)
+        C_ts = results["C_ts"]  # shape: (n_train, cell_types, genes)
         X_covar2 = np.eye(subtensor.shape[1])  # identity for cell types
         X_covar3 = np.eye(subtensor.shape[2])  # identity for genes
 
@@ -122,9 +129,15 @@ def run_tensor_regression(region_id,
     
     # === Construct design matrix ===
     X = vcf_df.set_index("FID").iloc[:, 5:]
-    X.insert(0, "intercept", 1)
-    X.index.name = "Sample_ID"
-    design_matrix = X
+
+    # === Standardize SNP covariates ===
+    scaler = StandardScaler()
+    X_scaled = pd.DataFrame(scaler.fit_transform(X), columns=X.columns, index=X.index)
+
+    # === Add intercept term ===
+    X_scaled.insert(0, "intercept", 1)
+    X_scaled.index.name = "Sample_ID"
+    design_matrix = X_scaled
     n_samples, n_covariates = design_matrix.shape
     if n_samples <= n_covariates:  
         raise ValueError(f"Design matrix invalid: {n_samples} samples < {n_covariates} covariates. Need more samples than covariates to perform regression.")
@@ -259,9 +272,9 @@ def TensorReg_3d(tensor, X_covar1=None,core_shape=None):
 
 
     # Project back to covariate space using R⁻¹
-    R1_inv = np.linalg.inv(R1)
-    R2_inv = np.linalg.inv(R2)
-    R3_inv = np.linalg.inv(R3)
+    R1_inv = np.linalg.pinv(R1)
+    R2_inv = np.linalg.pinv(R2)
+    R3_inv = np.linalg.pinv(R3)
     core, factors = tucker(tensor_proj, rank=core_shape)
     B_hat = tl.tucker_to_tensor((core, factors))
 
