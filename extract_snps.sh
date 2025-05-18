@@ -12,7 +12,7 @@ OUTDIR="snp_by_region_vcftools_parallel"
 mkdir -p "$OUTDIR"
 
 if [[ ! -f "$VCF" ]]; then
-    echo "❌ VCF not found for chr${chrom}: $VCF"
+    echo " VCF not found for chr${chrom}: $VCF"
     exit 1
 fi
 
@@ -21,13 +21,13 @@ out_vcf="${OUTDIR}/${region_id}.vcf"
 
 # ✅ 跳过已完成
 if [[ -f "$out_vcf" ]]; then
-    echo "⏭️  Skipping $region_id (already exists)"
+    echo " Skipping $region_id (already exists)"
     exit 0
 fi
 
 start_time=$(date +%s)
 
-echo "🔍 [chr${chrom}] Extracting ${start}-${end} → $region_id"
+echo " Extracting ${start}-${end} → $region_id"
 
 vcftools \
   --gzvcf "$VCF" \
@@ -45,5 +45,5 @@ rm "$tmp_vcf"
 end_time=$(date +%s)
 elapsed=$((end_time - start_time))
 
-echo "✅ $region_id done in ${elapsed}s"
+echo " $region_id done in ${elapsed}s"
 echo -e "$region_id\t$elapsed" >> "${OUTDIR}/region_timings.tsv"

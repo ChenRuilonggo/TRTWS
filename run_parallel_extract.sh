@@ -9,8 +9,8 @@
 # - --colsep '\t' 指定以 TAB 分隔列
 # - :::: valid_regions.tsv 表示读取输入文件
 
-echo "✅ 启动并行提取 SNP ..."
+echo "启动并行提取 SNP ..."
 
 parallel --bar -j 16 --colsep '\t' ./extract_snps.sh {1} {2} {3} {4} :::: valid_regions.tsv
 
-echo "✅ 所有任务已完成。"
+echo "所有任务已完成。"
