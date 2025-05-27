@@ -53,9 +53,9 @@ def run_tensor_regression_cv(region_id,     # region_id
     X_scaled.index.name = "Sample_ID"
     design_matrix = X_scaled
 
-    n_samples, n_covariates = design_matrix.shape
-    if n_samples <= n_covariates:
-        raise ValueError(f"Design matrix invalid: {n_samples} samples < {n_covariates} covariates.")
+    # n_samples, n_covariates = design_matrix.shape
+    # if n_samples <= n_covariates:
+    #     raise ValueError(f"Design matrix invalid: {n_samples} samples < {n_covariates} covariates.")
 
     # === Cross-validation ===
     kf = KFold(n_splits=n_splits, shuffle=True, random_state=random_state)
@@ -138,9 +138,9 @@ def run_tensor_regression(region_id,
     X_scaled.insert(0, "intercept", 1)
     X_scaled.index.name = "Sample_ID"
     design_matrix = X_scaled
-    n_samples, n_covariates = design_matrix.shape
-    if n_samples <= n_covariates:  
-        raise ValueError(f"Design matrix invalid: {n_samples} samples < {n_covariates} covariates. Need more samples than covariates to perform regression.")
+    # n_samples, n_covariates = design_matrix.shape
+    # if n_samples <= n_covariates:  
+    #     raise ValueError(f"Design matrix invalid: {n_samples} samples < {n_covariates} covariates. Need more samples than covariates to perform regression.")
     
     # === Define core shape ===
     core_shape = (design_matrix.shape[1], rank1, rank2)

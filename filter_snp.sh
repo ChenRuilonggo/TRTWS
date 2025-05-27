@@ -3,8 +3,8 @@
 
 # ===== 参数 =====
 VCF_FILE=$1                                     # 输入 VCF 文件路径
-MAF_THRESHOLD=${2:-0.05}                        # 默认 MAF 阈值为 0.05
-LD_R2_THRESHOLD=${3:-0.2}                      # 默认 LD r² 阈值为 0.2
+MAF_THRESHOLD=${2:-0.01}                        # 默认 MAF 阈值为 0.01
+LD_R2_THRESHOLD=${3:-0.95}                      # 默认 LD r² 阈值为 0.95
 
 # ===== 自动生成输出文件夹和前缀 =====
 VCF_BASENAME=$(basename "$VCF_FILE" .vcf)

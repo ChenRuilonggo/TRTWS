@@ -8,4 +8,4 @@ SCRIPT_PATH="/projects/YangLabData/Ruilong/APE_project/filter_snp.sh"
 export SCRIPT_PATH
 
 # 开始并行处理（最多并行 8 个任务，可根据节点调整 -j）
-find "$VCF_DIR" -name "*.vcf" | parallel -j 16 --bar 'bash "$SCRIPT_PATH" {} 0.05 0.2'
+find "$VCF_DIR" -name "*.vcf" | parallel -j 16 --bar 'bash "$SCRIPT_PATH" {} 0.01 0.95'

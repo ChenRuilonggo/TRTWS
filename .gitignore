@@ -4,3 +4,4 @@ tools/
 plink_result/
 
 expression_tensor.npz
+__pycache__/
